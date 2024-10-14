@@ -1,0 +1,22 @@
+{
+  "name": "www.digital-traffic.net",
+  "version": "0.1.0",
+  "description": "Thoughts of a Technology Consultant",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
+  },
+  "keywords": [
+    "website"
+  ],
+  "author": "Brian G. Shacklett",
+  "devDependencies": {
+    "date-fns": "^3.6.0",
+    "gray-matter": "^4.0.3",
+    "vitepress": "^1.3.4",
+    "vue": "^3.5.3"
+  }
+}
