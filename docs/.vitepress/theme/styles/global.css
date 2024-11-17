@@ -1,0 +1,25 @@
+/* global.css */
+:root {
+  --background-color: #F9F9F9;
+}
+
+.dark {
+  --background-color: #000000;
+}
+
+
+body {
+  font-size: 16px;
+  line-height: 1.5em;
+  /* Temporary grid for layout assistance */
+  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 1px, transparent 23px);
+  background-size: 24px 24px; /* Matches the line height */
+}
+
+h1 {
+  font-size: 2rem;
+}
+
+div#VPContent {
+  background-color: var(--background-color);
+}
