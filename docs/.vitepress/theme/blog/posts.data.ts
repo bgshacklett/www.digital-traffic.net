@@ -10,20 +10,22 @@ interface Post {
     string: string
   }
   excerpt: string | undefined
+  featureImageUrl: string | undefined
 }
 
 declare const data: Post[]
 export { Post, data }
 
 export default createContentLoader('blog/posts/*.md', {
-  excerpt: true,
+  excerpt: '<!-- more -->',
   transform(raw): Post[] {
     return raw
       .map(({ url, frontmatter, excerpt }) => ({
         title: frontmatter.title,
-        category: frontmatter.category ? frontmatter.category : 'Article',
+        category: frontmatter.category ?? 'Article',
         url,
         excerpt,
+        featureImageUrl: frontmatter.featureImageUrl ?? undefined,
         date: formatDate(frontmatter.date)
       }))
       .sort((a, b) => b.date.time - a.date.time)

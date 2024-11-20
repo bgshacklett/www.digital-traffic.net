@@ -5,7 +5,6 @@ const { Layout: DefaultLayout } = DefaultTheme
 import Posts from './blog/Posts.vue'
 
 import { useRoute } from 'vitepress'
-import BlogPost from './blog/Post.vue'
 import BlogIndex from './blog/Index.vue'
 import PostDetail from './blog/PostDetail.vue'
 import './styles/global.css'
@@ -32,3 +31,16 @@ const { path } = useRoute()
     <DefaultLayout/>
   </template>
 </template>
+
+<style scoped>
+:deep(h2) {
+  font-size: 2rem;
+  margin-top: 1.5rem;
+  padding-bottom: 0.5rem;
+  border: 0;
+}
+
+:deep(p) {
+  margin: 1rem 0;
+}
+</style>

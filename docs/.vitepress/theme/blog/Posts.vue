@@ -2,7 +2,7 @@
 import { useData } from 'vitepress'
 import { data as posts } from './posts.data'
 
-import Post from './Post.vue'
+import PostSummary from './PostSummary.vue'
 
 import './Posts.css'
 
@@ -12,9 +12,7 @@ const { theme: themeConfig } = useData()
 <template>
   <div class="posts-container">
     <div class="posts-list">
-      <div v-for="post of posts">
-        <Post :post="post" />
-      </div>
+      <PostSummary :post="post" v-for="post of posts"/>
     </div>
   </div>
 </template>
@@ -39,10 +37,12 @@ const { theme: themeConfig } = useData()
     margin-bottom: 4rem;
     text-align: center;
   }
+}
 
-  div.posts-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+:deep(h3) {
+  font-size: 1.5rem;
+  margin-top: 1.5rem;
+  line-height: 2rem;
 }
 
 div.posts-container {
@@ -61,14 +61,8 @@ div.posts-header p {
   /* text-[color:var(--vp-c-text-light-1)] dark:text-[color:var(--vp-c-text-dark-1)] */
 }
 
-div.posts-list {
-  display: grid;
-  gap: 1.5rem;
-}
-
 div.posts-list > div {
   background-color: var(--bg-color-posts);
-  padding: 2rem;
   border-radius: 0.3rem;
   border: 1px solid var(--border-color-posts);
   box-shadow: 0px 0px 4px var(--border-color-posts);
@@ -88,5 +82,24 @@ div.posts-list article {
 
 div.posts-list div.post-excerpt-main {
   margin-bottom: auto;
+}
+
+:deep(dl.publish-date) {
+  margin: 0;
+}
+
+:deep(dl.publish-date dt),
+:deep(dl.publish-date dd) {
+  display: inline-block;
+  vertical-align: top;
+}
+
+:deep(dl.publish-date dt) {
+  margin-right: .25em;
+  text-align: right;
+}
+
+:deep(dl.publish-date dd) {
+  margin: 0;
 }
 </style>

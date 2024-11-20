@@ -1,14 +1,13 @@
 ---
+layout: doc
 date: 2024-08-10
 title: Basic Markdown Formatting
 category: Tutorial
+featureImageUrl: /images/39f0e780-c90b-40c2-bf38-60fc511a2a82.webp
 tags: vue
-
 ---
 
-The Ultimate Guide to Markdown. __This will also be bold__
-
-<!-- more -->
+The Ultimate Guide to Markdown.
 
 ## Markdown Formatting
 
@@ -20,6 +19,8 @@ The Ultimate Guide to Markdown. __This will also be bold__
     #### This is an <h4> tag
     ##### This is an <h5> tag
     ###### This is an <h6> tag
+
+<!-- more -->
 
 ### Emphasis
 
