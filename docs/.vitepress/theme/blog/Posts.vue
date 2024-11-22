@@ -6,14 +6,21 @@ import PostSummary from './PostSummary.vue'
 
 import './Posts.css'
 
-const { theme: themeConfig } = useData()
+const props = defineProps({
+  level: {
+    type: Number,
+    default: 2 // Default heading level if not specified
+  }
+})
 </script>
 
 <template>
   <div class="posts-container">
-    <div class="posts-list">
-      <PostSummary :post="post" v-for="post of posts"/>
-    </div>
+    <ol class="posts-list">
+      <li v-for="post of posts">
+        <PostSummary :post="post" :level="level"/>
+      </li>
+    </ol>
   </div>
 </template>
 
@@ -40,9 +47,23 @@ const { theme: themeConfig } = useData()
 }
 
 :deep(h3) {
+  color: var(--vp-c-text-1);
   font-size: 1.5rem;
   margin-top: 1.5rem;
   line-height: 2rem;
+}
+
+:deep(h3 a) {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+ol.posts-list {
+  padding-left: 0;
+}
+
+ol.posts-list li {
+  list-style-type: none;
 }
 
 div.posts-container {
@@ -61,45 +82,17 @@ div.posts-header p {
   /* text-[color:var(--vp-c-text-light-1)] dark:text-[color:var(--vp-c-text-dark-1)] */
 }
 
-div.posts-list > div {
-  background-color: var(--bg-color-posts);
-  border-radius: 0.3rem;
-  border: 1px solid var(--border-color-posts);
-  box-shadow: 0px 0px 4px var(--border-color-posts);
-  box-sizing: border-box;
-  display: block;
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 24px;
-  text-rendering: optimizelegibility;
+ol.posts-list li {
+  margin-top: 4rem;
+  border-top: 1px solid;
 }
 
-div.posts-list article {
-  display: flex;
-  flex-direction: column;
-  min-height: 100%;
+ol.posts-list li:first-child {
+  margin-top: 2rem;
+  border-top: none;
 }
 
-div.posts-list div.post-excerpt-main {
+ol.posts-list div.post-excerpt-main {
   margin-bottom: auto;
-}
-
-:deep(dl.publish-date) {
-  margin: 0;
-}
-
-:deep(dl.publish-date dt),
-:deep(dl.publish-date dd) {
-  display: inline-block;
-  vertical-align: top;
-}
-
-:deep(dl.publish-date dt) {
-  margin-right: .25em;
-  text-align: right;
-}
-
-:deep(dl.publish-date dd) {
-  margin: 0;
 }
 </style>

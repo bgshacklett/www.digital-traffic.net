@@ -8,28 +8,68 @@ import Date from './Date.vue'
 
 const { frontmatter: data } = useData()
 
-const route = useRoute()
-
-const props = defineProps<{ post: Post }>()
+const props = defineProps({
+  post: Object,
+  level: {
+    type: Number,
+    default: 2 // Default heading level if not specified
+  }
+})
 </script>
 
 <template>
-  <div class="post-summary" style="position:relative; align-items: flex-start; overflow:hidden; display:flex; justify-content: space-between; margin-bottom: 4rem;">
-    <div style="max-width:40em; padding: 2rem; flex:1">
-      <div class="post-header" style="align:left;">
-        <h3>
-          <a :href="post.url">{{ post.title }}</a>
-        </h3>
+  <article class="post-summary">
+    <div class="content">
+      <component :is="'h' + level">
+        <a :href="post.url">{{ post.title }}</a>
+      </component>
+      <div
+        v-if="post.excerpt"
+        class="prose dark:prose-invert"
+        v-html="post.excerpt"
+      >
       </div>
-      <div class=post-excerpt v-html="post.excerpt"></div>
-      <Date :date="post.date" style="font-weight: 300; color: #999"/>
+      <div>
+        <a aria-label="read more" :href="post.url">Read more →</a>
+      </div>
     </div>
-    <img class="post-image" style="position:absolute; right:0; border-radius:3px; object-fit: cover; top: 50%; transform: translateY(-50%); height: 400px;width: 400px; border:0" :src="post.featureImageUrl" />
-  </div>
+    <div class="meta">
+      <Date :date="post.date"/>
+    </div>
+  </article>
 </template>
 
 <style scoped>
-h3 {
-  margin-top: 0;
+article {
+  display: flex;
+  justify-content: space-between;
+  --letter-spacing: .1em;
+}
+
+:deep(article) {
+}
+
+article div.content {
+  width: 45em;
+}
+
+:deep(dl.publish-date) {
+  display:flex;
+  margin: 0;
+  margin-top: 2rem;
+  letter-spacing: var(--letter-spacing);
+}
+
+:deep(dl.publish-date dt),
+:deep(dl.publish-date dd) {
+  display: inline-block;
+  vertical-align: top;
+}
+
+:deep(dl.publish-date dt) {
+}
+
+:deep(dl.publish-date dd) {
+  margin-left: 1em;
 }
 </style>

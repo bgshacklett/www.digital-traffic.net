@@ -31,4 +31,4 @@ hero:
 ## Projects
 ...
 ## Latest Thoughts
-<Posts/>
+<Posts :level="3"/>
