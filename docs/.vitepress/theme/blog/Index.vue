@@ -9,10 +9,41 @@ const { Layout: DefaultLayout } = DefaultTheme
 
 <template>
   <DefaultLayout>
-    <template #page-top>
-      <div style="max-width: 1152px; margin: 0 auto">
-        <h1 style="font-size: 2rem; margin-top: 2rem; margin-bottom: 1rem; line-height: 6rem;">The Brain Dump</h1>
+    <template #home-hero-after>
+      <div class="title" style="">
+        <h1>The Brain Dump</h1>
       </div>
     </template>
   </DefaultLayout>
 </template>
+
+
+<style scoped>
+h1 {
+  margin: revert;
+  line-height: 4rem;
+  font-size: 4rem;
+  color: var(--vp-c-brand-1);
+  font-weight: 700;
+}
+
+div.title {
+  max-width: calc(960px + 128px);
+  margin: 0 auto;
+  margin-top: calc((var(--vp-nav-height) + var(--vp-layout-top-height, 0px)) + 4rem);
+  margin-bottom: 6rem;
+  padding: 0 24px;
+}
+
+@media (min-width: 640px) {
+  div.title {
+    padding: 0 48px;
+  }
+}
+
+@media (min-width: 960px) {
+  div.title {
+    padding: 0 64px;
+  }
+}
+</style>

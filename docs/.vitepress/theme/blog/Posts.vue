@@ -69,7 +69,7 @@ ol.posts-list li {
 div.posts-container {
   margin-left: auto;
   margin-right: auto;
-  max-width: 1152px;
+  max-width: 960px;
 }
 
 div.posts-header {

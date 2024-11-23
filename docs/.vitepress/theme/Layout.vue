@@ -4,12 +4,13 @@ import DefaultTheme from 'vitepress/theme'
 const { Layout: DefaultLayout } = DefaultTheme
 import Posts from './blog/Posts.vue'
 
-import { useRoute } from 'vitepress'
+import { useData, useRoute } from 'vitepress'
 import BlogIndex from './blog/Index.vue'
 import PostDetail from './blog/PostDetail.vue'
 import './styles/global.css'
 
 const { path } = useRoute()
+const { frontmatter } = useData()
 
 </script>
 
@@ -21,8 +22,11 @@ const { path } = useRoute()
 
   <template v-else-if="path.startsWith('/blog/posts/')">
     <DefaultLayout>
-      <template #doc-top>
+      <template #doc-after>
         <PostDetail/>
+      </template>
+      <template #doc-before>
+        <h1 class="title">{{ frontmatter.title }}</h1>
       </template>
     </DefaultLayout>
   </template>
@@ -31,6 +35,7 @@ const { path } = useRoute()
     <DefaultLayout/>
   </template>
 </template>
+
 
 <style scoped>
 :deep(h2) {
@@ -42,5 +47,17 @@ const { path } = useRoute()
 
 :deep(p) {
   margin: 1rem 0;
+}
+
+:deep(.VPHero .container) {
+  max-width: 960px;
+}
+
+:deep(div.VPHome div.header) {
+  max-width: 960px;
+}
+
+:deep(div.vp-doc) {
+  max-width: calc(960px + 128px);
 }
 </style>

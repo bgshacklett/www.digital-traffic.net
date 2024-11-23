@@ -40,24 +40,22 @@ const props = defineProps({
 </template>
 
 <style scoped>
-article {
-  display: flex;
-  justify-content: space-between;
-  --letter-spacing: .1em;
-}
 
-:deep(article) {
+@media(min-width: 960px) {
+  article {
+    display: flex;
+    justify-content: space-between;
+  }
 }
 
 article div.content {
-  width: 45em;
+  max-width: 35em;
 }
 
 :deep(dl.publish-date) {
   display:flex;
   margin: 0;
   margin-top: 2rem;
-  letter-spacing: var(--letter-spacing);
 }
 
 :deep(dl.publish-date dt),
@@ -67,9 +65,10 @@ article div.content {
 }
 
 :deep(dl.publish-date dt) {
+  text-align: right;
 }
 
 :deep(dl.publish-date dd) {
-  margin-left: 1em;
+  margin-left: .5em;
 }
 </style>
