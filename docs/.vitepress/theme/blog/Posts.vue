@@ -60,7 +60,7 @@ div.posts-header p {
 
 ol.posts-list li {
   margin-top: 4rem;
-  border-top: 1px solid;
+  border-top: 1px solid #DDD;
 }
 
 ol.posts-list li:first-child {
