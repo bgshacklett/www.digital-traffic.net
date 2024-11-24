@@ -39,9 +39,6 @@ const { frontmatter } = useData()
 
 <style scoped>
 :deep(h2) {
-  font-size: 2rem;
-  margin-top: 1.5rem;
-  padding-bottom: 0.5rem;
   border: 0;
 }
 

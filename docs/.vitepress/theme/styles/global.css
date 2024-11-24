@@ -1,36 +1,85 @@
 /* global.css */
 :root {
-  --background-color: #F9F9F9;
   --vp-c-bg-soft: #F0F0F0;
 }
 
 .dark {
-  --background-color: #000000;
+  /* var values for dark mode here */
+}
+
+:root {
+  /* Define font sizes for heading levels */
+  --heading-font-size-1: 2rem;
+  --heading-font-size-2: 1.75rem;
+  --heading-font-size-3: 1.5rem;
+  --heading-font-size-4: 1.25rem;
+  --heading-font-size-5: 1rem;
+  --heading-font-size-6: 0.875rem;
+
+  /* Define line heights for heading levels */
+  --heading-line-height-1: 1em;
+  --heading-line-height-2: 1em;
+  --heading-line-height-3: 1em;
+  --heading-line-height-4: 1em;
+  --heading-line-height-5: 1em;
+  --heading-line-height-6: 1em;
+
+  --heading-margin-top-1: 1rem;
+  --heading-margin-bottom-1: 0.5rem;
+
+  --heading-margin-top-2: 0.75rem;
+  --heading-margin-bottom-2: 0.5rem;
+
+  --heading-margin-top-3: 0.5rem;
+  --heading-margin-bottom-3: 0.25rem;
+
+  --heading-margin-top-4: 1rem;
+  --heading-margin-bottom-4: 0.5rem;
+
+  --heading-margin-top-5: 0.75rem;
+  --heading-margin-bottom-5: 0.5rem;
+
+  --heading-margin-top-6: 0.5rem;
+  --heading-margin-bottom-6: 0.25rem;
+}
+
+
+body {
+  --base-line-height: 1.5em;
+  font-size: 16px;
+  line-height: var(--base-line-height);
+  /* Temporary grid for layout assistance */
+  /* background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 1px, transparent 23px); */
+  /* background-size: var(--base-line-height) var(--base-line-height); /1* Matches the line height *1/ */
+}
+
+.vp-doc p {
+  line-height: var(--base-line-height);
 }
 
 h1 {
-  all: revert;
-  font-size: 4rem;
-  line-height: 1.5em;
+  margin-top: var(--heading-margin-top-1);
+  margin-bottom: var(--heading-margin-bottom-1);
+  padding-top: 0;
+  padding-bottom: 0;
+  font-size: var(--heading-font-size-1);
+  line-height: var(--heading-line-height-1);
 }
 
+h2 {
+  margin-top: var(--heading-margin-top-2);
+  margin-bottom: var(--heading-margin-bottom-2);
+  padding-top: 0;
+  padding-bottom: 0;
+  font-size: var(--heading-font-size-2);
+  line-height: var(--heading-line-height-2);
+}
 
-/* body { */
-/*   font-size: 16px; */
-/*   line-height: 1.5em; */
-/*   /1* Temporary grid for layout assistance *1/ */
-/*   background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 1px, transparent 23px); */
-/*   background-size: 24px 24px; /1* Matches the line height *1/ */
-/* } */
-
-/* h1 { */
-/*   font-size: 2rem; */
-/* } */
-
-/* h2 { */
-
-/* } */
-
-/* div#VPContent { */
-/*   background-color: var(--background-color); */
-/* } */
+h3 {
+  margin-top: var(--heading-margin-top-3);
+  margin-bottom: var(--heading-margin-bottom-3);
+  padding-top: 0;
+  padding-bottom: 0;
+  font-size: var(--heading-font-size-3);
+  line-height: var(--heading-line-height-3);
+}

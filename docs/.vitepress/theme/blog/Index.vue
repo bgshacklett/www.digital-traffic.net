@@ -11,7 +11,7 @@ const { Layout: DefaultLayout } = DefaultTheme
   <DefaultLayout>
     <template #home-hero-after>
       <div class="title" style="">
-        <h1>The Brain Dump</h1>
+        <h1>#brain-dump</h1>
       </div>
     </template>
   </DefaultLayout>

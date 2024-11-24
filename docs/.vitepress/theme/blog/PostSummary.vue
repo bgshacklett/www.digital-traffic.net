@@ -17,8 +17,9 @@ const props = defineProps({
 })
 </script>
 
+
 <template>
-  <article class="post-summary">
+  <article class="post-summary" :data-level="level">
     <div class="content">
       <component :is="'h' + level">
         <a :href="post.url">{{ post.title }}</a>
@@ -33,29 +34,41 @@ const props = defineProps({
         <a aria-label="read more" :href="post.url">Read more →</a>
       </div>
     </div>
-    <div class="meta">
+    <div :data-heading-level="level" class="meta">
       <Date :date="post.date"/>
     </div>
   </article>
 </template>
 
-<style scoped>
 
-@media(min-width: 960px) {
-  article {
-    display: flex;
-    justify-content: space-between;
-  }
+<style scoped>
+[data-heading-level] {
+  --line-height: 1rem;
+}
+
+[data-heading-level="2"] {
+  --publish-date-margin-top: calc(
+    var(--heading-font-size-2)
+    + var(--heading-margin-top-2)
+    + var(--line-height)
+  );
+}
+
+[data-heading-level="3"] {
+  --publish-date-margin-top: calc(
+    var(--heading-font-size-3)
+    + var(--heading-margin-top-3)
+  );
 }
 
 article div.content {
   max-width: 35em;
 }
 
-:deep(dl.publish-date) {
-  display:flex;
+div.meta {
+  display: flex;
   margin: 0;
-  margin-top: 2rem;
+  margin-top: 1em;
 }
 
 :deep(dl.publish-date dt),
@@ -70,5 +83,17 @@ article div.content {
 
 :deep(dl.publish-date dd) {
   margin-left: .5em;
+}
+
+
+@media(min-width: 960px) {
+  article {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  div.meta {
+    margin-top: var(--publish-date-margin-top);
+  }
 }
 </style>
