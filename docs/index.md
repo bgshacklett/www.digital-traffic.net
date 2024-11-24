@@ -28,5 +28,5 @@ hero:
 #     title: About Me
 #     details: Lorem ipsum...
 ---
-## Latest Thoughts
+## Latest Updates
 <Posts :level="3"/>

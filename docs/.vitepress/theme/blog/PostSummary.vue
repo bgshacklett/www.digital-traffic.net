@@ -48,16 +48,13 @@ const props = defineProps({
 
 [data-heading-level="2"] {
   --publish-date-margin-top: calc(
-    var(--heading-font-size-2)
-    + var(--heading-margin-top-2)
-    + var(--line-height)
+    var(--heading-margin-top-2)
   );
 }
 
 [data-heading-level="3"] {
   --publish-date-margin-top: calc(
-    var(--heading-font-size-3)
-    + var(--heading-margin-top-3)
+    var(--heading-margin-top-3)
   );
 }
 

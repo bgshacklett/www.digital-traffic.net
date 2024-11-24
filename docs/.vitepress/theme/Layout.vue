@@ -22,11 +22,11 @@ const { frontmatter } = useData()
 
   <template v-else-if="path.startsWith('/blog/posts/')">
     <DefaultLayout>
-      <template #doc-after>
-        <PostDetail/>
-      </template>
       <template #doc-before>
         <h1 class="title">{{ frontmatter.title }}</h1>
+      </template>
+      <template #doc-after>
+        <PostDetail/>
       </template>
     </DefaultLayout>
   </template>
