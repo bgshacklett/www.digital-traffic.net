@@ -17,9 +17,9 @@ life easier (and occasionally more complicated), or DIYing solutions to
 avoid overly expensive products, these projects are where I keep my hands dirty
 and my curiosity and imagination alive.
 
-This blog (are we still saying that?) is brand new, so expect a mix of content:
-deep technical dives, practical project walkthroughs, and plenty of musings on
-what works (and what doesn’t). Whether you’re a seasoned pro or just getting
-started, I hope this space inspires you to explore, experiment, and maybe even
-build something amazing.
+This blog (are we still saying that?) is brand new, so expect a mix of content
+as I figure things out: deep technical dives, practical project walkthroughs,
+and plenty of musings on what works (and what doesn’t) are all on the board.
+Whether you’re a pro in the industry or just getting started, I hope this space
+inspires you to explore, experiment, and maybe even build something amazing.
 <!-- more -->
