@@ -87,17 +87,24 @@ this seemed like the perfect excuse to try something a bit more concrete.
   8-Layer Stackable
   HAT](https://sequentmicrosystems.com/products/8-relays-stackable-card-for-raspberry-pi).
   Up to eight of these can be stacked onto a single Pi, and using two of them
-  gave me a total of 16 SPDT relays. They integrate seamlessly with the
-  Raspberry Pi, and they have pre-built nodes for Node-Red, making them an
-  efficient choice for managing multiple devices with very little effort.
+  gave me a total of 16 SPDT relays and a bonus RS-485/MODBUS port. They
+  integrate seamlessly with the Raspberry Pi, via I²C, and they have pre-built
+  nodes for Node-Red, plus among a nubmer of other integrations. All told, they
+  are a very an efficient choice for managing multiple devices with very little
+  effort.
 
-* 24VAC Components
+* External Relays and other 24VAC components
 
-  Some components in the pool system, like higher amperage external relays and
-  valve actuators, run on 24VAC. Finding the right transformer for these was a
-  bit of a challenge. It took me some time to choose one, and I'm still not
-  entirely sure I made the best choice. I think I might be able to switch it
-  out for a smaller unit without losing any functionality.
+  The pool and spa lights run too close to the 4 amp rating of the relays on
+  the Sequent Microsystems board, so I added some extra Schneider Electric
+  relays to control them. The actuators for the valves run on 24VAC, requiring
+  that I add a transformer to the mix, so I chose to use this voltage for the
+  relay coils, as well.
+
+  Finding the right transformer for these components was a bit of a challenge.
+  It took me some time to choose one, and I'm still not entirely sure I made
+  the best choice. I think I might be able to switch it out for a smaller unit
+  without losing any functionality, but more math is required.
 
 * Enclosure
 
@@ -119,36 +126,33 @@ this seemed like the perfect excuse to try something a bit more concrete.
   system more safely and efficiently.
 
 
-
-
 ## Software Architecture
 
-Node-RED is the core of swimctl, handling all events, logic, and interfacing
+Node-RED is the core of the controller, handling all events, logic, and interfacing
 with Home Assistant. I chose Node-RED because of its strong community support
 and widespread use in similar automation solutions. It provided the flexibility
-and functionality I needed without a steep learning curve. Kubernetes for
-Abstraction and Automation
+and functionality I needed without a steep learning curve.
 
-  Running Kubernetes on the Raspberry Pi might sound like overkill, but it
-  aligns with my goal of configuration as code. Kubernetes provides an
-  abstraction layer that allows me to tie in many pre-existing automation tools
-  to handle provisioning and manage the system more effectively.
+Node-RED is installed as a pod running on Kubernetes. Running K8s on the Pi
+might sound like overkill, but it aligns with my goal of configuration as code.
+Kubernetes provides an abstraction layer that allows me to tie in many
+pre-existing automation mechanisms to handle provisioning and manage the system
+more effectively.
 
-By running Kubernetes on the Raspberry Pi, I achieved a level of abstraction
-that simplifies deployment and management. Kubernetes helps automate the
-provisioning process, ensuring that the system is reproducible and that
-configurations are consistent across rebuilds. Integration with Home Assistant
-via MQTT
-
-The integration with Home Assistant is facilitated through MQTT with dynamic
-discovery. Node-RED communicates with Home Assistant by sending metadata about
-the entities I want to expose. It also listens for state changes, allowing for
-real-time control and monitoring.
+Integration with Home Assistant is facilitated through
+[MQTT](https://mqtt.org/) using [dynamic
+discovery](https://www.home-assistant.io/integrations/mqtt/#mqtt-discovery).
+Node-RED sends metadata about the entities it exposes. It then listens for
+control messages via MQTT "control" topics, allowing for real-time control.
+Responses on corresponding "state" topics allow Node-Red to update Home
+Assistant as to the current state of the controller and its exposed devices.
 
 Implementing this integration was challenging at first. The MQTT discovery
-specification is detailed and requires careful implementation. It took some
-experimenting to understand how to structure the messages and topics properly,
-but the effort paid off with a seamless integration.
+specification is well documented, but I had difficulty finding any guidance on
+implementation via Node-Red. It took some experimenting to understand how to
+collect metadata for each component, how to structure the messages and topics
+properly, and how and when to trigger the discovery messages.
+
 
 ## Implementation
 
@@ -171,33 +175,19 @@ with Home Assistant. The discovery feature in MQTT is powerful but wasn't
 immediately intuitive. It took some hands-on experimentation to understand how
 to structure the messages and topics properly.
 
-* Designing the Automation Panel
+* Designing the Panel
 
-Creating the automation panel was more complex than I anticipated. Learning
-about industrial components like DIN-mounted terminal blocks, relays, and
-transformers required research and patience. Starting with a plywood mock-up
-helped, but there were still multiple iterations to optimize the layout and
-functionality.
-
+After weeks reading about the components used in industrial automation panels,
 I started by experimenting with a 2×2-foot sheet of plywood from a local
 big-box store. Mounting DIN rails onto the plywood allowed me to get a rough
 idea of how the components would fit together inside an enclosure. This
 hands-on approach helped me visualize the layout and make adjustments before
 committing to a final design.
 
-* Finding the Right Transformer
-
-Selecting a suitable transformer for the 24VAC components was a challenge. It
-took time to find one that met the requirements, and I'm still considering
-switching to a smaller unit to improve efficiency without sacrificing
-functionality.
-
-* Interpreting UL-508A Standards
-
-Understanding the UL-508A standards was another significant challenge. These
-standards govern the safety and design of industrial control panels. While not
-all aspects were relevant to my project, familiarizing myself with the
-pertinent sections was essential to ensure the system's safety and reliability.
+I've done my best to align to UL-508A standards, which govern the design and
+implementation of industrial control panels. I'm quite sure there are things
+that I've missed, but it's been very helpful to be able to lean on well
+documented specifications.
 
 
 * Transitioning Systems
@@ -208,58 +198,15 @@ However, by carefully planning and focusing on maintaining critical systems, I
 was able to make the switch without any major issues.
 
 
-## Unique Features and Innovations
 
-* Off-the-Shelf Components
-
-Using readily available components means that maintenance and replacements are
-straightforward. There's no need to deal with proprietary systems or restricted
-parts. This approach not only reduces costs but also extends the system's
-lifespan.
-
-* Enhanced Control and Flexibility
-
-With swimctl, I have complete control over the pool's functions. The system is
-flexible enough to allow for future expansions or modifications, and I can
-customize it to suit specific needs or preferences.
-
-* Integration with Home Assistant
-
-The seamless integration with Home Assistant adds significant value. It allows
-for advanced automation, such as scheduling, remote access, and the ability to
-trigger actions based on other events within the home automation ecosystem.
-
-
-* Integration with Home Assistant
-
-  Integration with Home Assistant allows for easy access right from the warmth
-  of the hot tub. I can control various aspects of the pool system remotely and
-  even automate control them based on other external factors. For example, I
-  could change how long the pump runs based on the weather, saving some
-  precious pennies on my electricity bill.
-
-
-
-## User Interface and Experience
-
-* Current State
+## Results
 
 Right now, I can control the pool system via Home Assistant from any device on
-my home network. This includes smartphones, tablets, and computers. I've also
-set up simple scene controllers that make it easy to operate different features
-without navigating complex menus.
+my home network. This includes smartphones, tablets, and computers. I'll also
+be setting up some simple scene controllers that should make it easy to operate
+without requiring a device on the network. Zooz makes some great z-wave
+devices, including scene controllers, which should fit the bill.
 
-* Future Plans
-
-I'm working on developing a more robust dashboard within Home Assistant to
-provide a better user experience. Additionally, I plan to implement physical
-controls as a fallback in case Home Assistant is down. While wireless options
-are simpler to install, I'm leaning toward wired controls for their reliability
-and, frankly, because I enjoy the challenge.
-
-## Results and Benefits Learning
-
-* Experience
 
 This project has been a fantastic learning opportunity. I've learned a great
 deal about industrial automation components, how to work effectively with
@@ -267,71 +214,68 @@ Node-RED, and improved my overall understanding of IoT systems. While I'm still
 very much an amateur in this space, the amount I've learned has been incredibly
 rewarding.
 
-* Functional System
-
-I now have a pool automation system that I can control from my smartphone. It
-responds to events within Home Assistant, allowing for automation scenarios
-that weren't possible before.
-
-* Personal Satisfaction
-
 Perhaps the most significant benefit has been the enjoyment I've derived from
 this project. Combining my interests in automation and technology to solve a
 real-world problem has been incredibly fulfilling.
 
+
 ## Future Enhancements
+
+* Interface
+
+  I'm working on developing a more robust dashboard within Home Assistant to
+  provide a better user experience. Additionally, I plan to implement physical
+  controls as a fallback in case Home Assistant is down. While wireless options
+  are simpler to install, I'm leaning toward wired controls for their reliability
+  and, frankly, because I enjoy the challenge.
 
 * Reducing Cloud Dependency
 
-Currently, some aspects of the system depend on cloud services, such as storing
-the flows.yaml file in GitHub. I plan to make this and other configuration
-files available locally to reduce dependency on external services and isolate
-failure domains.
-
-* Enhancing Human Interfaces
-
-Improving the user interface is high on my priority list. I aim to create a
-solid dashboard within Home Assistant and implement physical controls for added
-reliability and convenience.
+  Currently, some aspects of the system depend on cloud services, such as storing
+  the flows.yaml file in GitHub. I plan to make this and other configuration
+  files available locally to reduce dependency on external services and isolate
+  failure domains.
 
 * Advanced Equipment Control
 
-One of the more ambitious plans is to switch from using relays to control the
-pump and heater to using RS-485 communication. This will allow for more precise
-control and monitoring. However, since the messaging specifications aren't
-published, it will require significant effort, including potentially
-reverse-engineering protocols and collaborating with others who have tackled
-similar challenges.
+  One of the more ambitious plans is to switch from using relays to control the
+  pump and heater to using RS-485 communication. This will allow for more precise
+  control and monitoring, while freeing up a number of relays and a good amount
+  of space in the enclosure. However, since the messaging specifications aren't
+  published, it will require leaning on the reverse engineering that some other
+  folks have done, and perhaps some direct collaboration.
 
 
 ## Conclusion
 
-Embarking on the swimctl project has been an incredible journey. From grappling
-with outdated systems and restrictive corporate practices to designing and
-implementing my own solution, I've learned a great deal. The challenges were
-numerous, but each one offered an opportunity to grow and adapt.
+  It has been an incredible journey. From grappling with outdated systems and
+  restrictive corporate practices to designing and implementing my own
+  solution, I've learned a great deal. The challenges were numerous, but each
+  one offered an opportunity to grow and learn.
 
-I'm looking forward to finalizing the system and sharing it with others who
-might benefit from my experiences. Whether you're facing similar frustrations
-with proprietary systems or simply have an interest in automation, I hope
-swimctl serves as a useful resource.
+  I'm looking forward to the system being feature complete, though I doubt I'll
+  ever stop tweaking, and I'm and sharing it with others who might benefit from
+  my experiences. Whether you're facing similar frustrations with proprietary
+  systems or simply have an interest in automation, I hope this serves as a
+  useful resource and source of inspiration.
 
-The future holds many possibilities, and I'm excited to continue improving and
-expanding the system. There's always more to learn, and I can't wait to see
-where this project takes me next.
 
-## Appendices Diagrams and Schematics
+## Appendix
 
-(Here, you can include diagrams of your system architecture, panel layouts, and
-wiring schematics to provide visual context.) Code Samples
+<!-- (Here, you can include diagrams of your system architecture, panel layouts, and -->
+<!-- wiring schematics to provide visual context.) Code Samples -->
 
-(Include snippets from your configuration files or Node-RED flows that
-highlight key aspects of your implementation.) Resources
+<!-- (Include snippets from your configuration files or Node-RED flows that -->
+<!-- highlight key aspects of your implementation.) Resources -->
 
-Node-RED: https://nodered.org/ Home Assistant MQTT Discovery:
-https://www.home-assistant.io/integrations/mqtt/#mqtt-discovery Sequent
-Microsystems Relay Boards: https://sequentmicrosystems.com/ Gratury Junction
-Box: Amazon Product Page UL-508A Standards: UL Standards
+### References
+
+* Node-RED: https://nodered.org/
+* Home Assistant MQTT Discovery:
+  https://www.home-assistant.io/integrations/mqtt/#mqtt-discovery
+* Sequent Microsystems: https://sequentmicrosystems.com/
+* Gratury Junction Box: https://www.amazon.com/gp/product/B0BFPW79LS?psc=1
+* UL-508A Standards: https://www.ul.com/resources/ul-508a-third-edition-summary-requirements
 
 
 ### Glossary
