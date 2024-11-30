@@ -91,3 +91,15 @@ h3,
 .vp-doc h2 .header-anchor {
   top: 0;
 }
+
+.vp-doc ul,
+.vp-doc ol {
+  padding: 0;
+  list-style-position: outside;
+}
+
+.vp-doc li ul,
+.vp-doc li ol {
+  padding: revert;
+  list-style-position: revert;
+}
