@@ -97,3 +97,9 @@ h3,
   padding: 0;
   list-style-position: outside;
 }
+
+.vp-doc li ul,
+.vp-doc li ol {
+  padding: revert;
+  list-style-position: revert;
+}
