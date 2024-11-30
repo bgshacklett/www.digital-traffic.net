@@ -4,52 +4,73 @@ title: >-
 date: 2024-11-29
 ---
 
-When I bought my home a few years ago, a pool was an absolute requirement for
-me. Of course, I knew nothing about how pools operate, nor how to maintain
-them, but quickly found myself drinking from a firehose of knowledge on the
-subject. To begin with, the existing automation system (responsible for
-scheduling the pump, running the heater, switching valves for different modes
-of operation, etc.) was not in good shape. 20 years old and only partly
-functional, it was far from a modern convenience.
+A technical write-up of a DIY pool automation system, including:
 
-To make matters worse, finding parts or options for upgrading was a maze of
-corporate red tape. The manufacturer actually restricts purchases of any
-replacement parts to licensed resellers, a practice I find particularly
-consumer-hostile.
-
-In the short term, I was able to track down some of the malfunctions to an old
-keypad which sat next to the spa and was destroyed by the Florida sun enough to
-let water in and cause some short circuting. Removing this brought the lights
-and heater control back online, but it was still janky, and prone to frustrate
-me as much as allow me to relax.
-
-Things escalated after I ended up with a new pump and heater, which weren't
-really compatible with the old system. I'd been thinking about putting a
-replacement in place for a while, but this pushed me to get off my butt and
-start tinkering. The idea of interacting with the physical world through
-computers has always intrigued me. I'm a big fan of software automation, and
-this seemed like the perfect excuse to try something a bit more concrete.
+* Hardware implementation
+* Software implementation with links to Node-RED flows and Kubernetes manifests
+* Integration with Home Assistant
 
 <!-- more -->
+
+## Introduction
+
+I bought my current home a few years ago. Being in Florida, I decided that a
+pool was an absolute requirement for me. While I achieved my goal, the existing
+automation system (responsible for scheduling the pump, running the heater,
+switching valves for different modes of operation, etc.) was not in good shape.
+20 years old and only partly functional, it was in obvious need of replacement.
+
+To make matters worse, finding parts or options for upgrading was a maze of
+corporate red tape. The manufacturer refuses to sell any replacement parts to
+anyone who isn't a licensed reseller. I found this practice to be particularly
+consumer-hostile, and decided that I wouldn't be giving them any of my money.
+
+In the short term, I was able to track down some of the malfunctions to an old
+keypad which sat next to the spa. It was destroyed by the Florida sun enough to
+let water in and cause some short circuting. Removing this brought the lights
+and heater control back online, but the system remained unreliable.
+
+I dealt with the idiosyncracies for a long while, but eventually I found a
+renewed interest in changing the system out after I purchased a new pump
+and heater, which weren't really compatible with it. The idea of interacting
+with the physical world through computers has always intrigued me, and I'd been
+thinking about building a replacement for a while. This finally pushed
+me to get off my butt and start tinkering.
 
 
 ## Goals
 
 * Use Off-the-Shelf Parts
 
-  The biggest requirement was to build the entire system using readily
+  The most important requirement was to build the entire system using readily
   available components. I wanted to ensure that any part of the system could be
   easily replaced without jumping through hoops or dealing with proprietary
   restrictions. This makes maintenance straightforward and encourages future
-  experimentation.
+  experimentation and improvements.
 
-* A Code-First Methodology
+* Feature Parity with the Old System
 
-  I'm working hard to ensure that as much of the configuration as possible is
-  stored in a Git repository and deployed via automation tools. This means I
-  can rebuild the entire system quickly because the build process is almost
-  entirely automated. A code-first approach also serves as excellent
-  documentation, providing a clear record of how everything fits together.
+  The original automation system had the following features that I needed to
+  implement:
+
+    * Control the pool and spa lights
+    * Handle switching from pool mode to spa mode by triggering valve actuators
+    * Enable the heater to be turned on remotely
+    * Ensure that the pump is running during spa operation
+
+* Control the New Pump
+
+  In addition to the original features, I needed the new system to control the
+  speed of the variable speed pump I'd purchased to replace the old rusty
+  single-speed pump that came with the house. Most importantly, ramping the
+  speed up when in spa mode.
+
+* Multi-Mode Control of the Heater
+
+  While the old system was capable of turning the pump on and off, it wasn't
+  able to select between pool and spa temperatures. The new system will use a
+  so-called 3-wire control (and eventually RS-485 if I can get it working) to
+  enable choosing the temperature depending on use. 
 
 
 ## Major Hardware Components
@@ -118,8 +139,8 @@ this seemed like the perfect excuse to try something a bit more concrete.
 
 * Circuit Protection
 
-  Because the automation system functions, partially, as a load center for the
-  pool equipment, each major section of the panel has dedicated circuit
+  The automation system functions, partially, as a load center for the
+  pool equipment, so each major section of the panel has dedicated circuit
   breakers. This not only allows for the use of smaller gauge (less expensive
   and more flexible) wire but also enables isolation for troubleshooting
   purposes. By being able to cut power to specific sections, I can work on the
@@ -156,46 +177,55 @@ properly, and how and when to trigger the discovery messages.
 
 ## Implementation
 
-During the transition from the old automation unit to the new panel, I ensured
-that the most critical component (the pump) was only offline for a short while,
-but I allowed myself time to get everything else back up and running. This
-cautious approach minimized risk and allowed me to focus on implementing
-and testing each component thoroughly.
+  During the transition from the old automation unit to the new panel, I ensured
+  that the most critical component (the pump) was only offline for a short while,
+  but I allowed myself time to get everything else back up and running. This
+  cautious approach minimized risk and allowed me to focus on implementing
+  and testing each component thoroughly.
 
-Progress has been a bit slow, but steady. Programming in Node-RED required a
-different way of thinking from Python, or Java, and integrating with Home
-Assistant required a lot of reading and looking at what other people have done.
-Overall, though, I'm pleased with how it's coming together. I expect to achieve
-full functionality (if not stability) within the next few weeks. Technical
+  Progress has been a bit slow, but steady. Programming in Node-RED required a
+  different way of thinking from Python, or Java, and integrating with Home
+  Assistant required a lot of reading and looking at what other people have done.
+  Overall, though, I'm pleased with how it's coming together. I expect to achieve
+  full functionality (if not stability) within the next few weeks.
 
 * Integrating Node-RED with MQTT
 
-One of the initial hurdles was integrating Node-RED with MQTT for communication
-with Home Assistant. The discovery feature in MQTT is powerful but wasn't
-immediately intuitive. It took some hands-on experimentation to understand how
-to structure the messages and topics properly.
+  One of the initial hurdles was integrating Node-RED with MQTT for communication
+  with Home Assistant. The discovery feature in MQTT is powerful but wasn't
+  immediately intuitive. It took some hands-on experimentation to understand how
+  to structure the messages and topics properly.
 
 * Designing the Panel
 
-After weeks reading about the components used in industrial automation panels,
-I started by experimenting with a 2×2-foot sheet of plywood from a local
-big-box store. Mounting DIN rails onto the plywood allowed me to get a rough
-idea of how the components would fit together inside an enclosure. This
-hands-on approach helped me visualize the layout and make adjustments before
-committing to a final design.
+  After weeks reading about the components used in industrial automation panels,
+  I started by experimenting with a 2×2-foot sheet of plywood from a local
+  big-box store. Mounting DIN rails onto the plywood allowed me to get a rough
+  idea of how the components would fit together inside an enclosure. This
+  hands-on approach helped me visualize the layout and make adjustments before
+  committing to a final design.
 
-I've done my best to align to UL-508A standards, which govern the design and
-implementation of industrial control panels. I'm quite sure there are things
-that I've missed, but it's been very helpful to be able to lean on well
-documented specifications.
+  I've done my best to align to UL-508A standards, which govern the design and
+  implementation of industrial control panels. I'm quite sure there are things
+  that I've missed, but it's been very helpful to be able to lean on well
+  documented specifications.
+
+
+* A Code-First Methodology
+
+  I'm working hard to ensure that as much of the configuration as possible is
+  stored in a Git repository and deployed via automation tools. This means I
+  can rebuild the entire system quickly because the build process is almost
+  entirely automated. A code-first approach also serves as excellent
+  documentation, providing a clear record of how everything fits together.
 
 
 * Transitioning Systems
 
-I was initially apprehensive about taking the old system offline and installing
-the new one. The fear of causing downtime for the pool pump was a real concern.
-However, by carefully planning and focusing on maintaining critical systems, I
-was able to make the switch without any major issues.
+  I was initially apprehensive about taking the old system offline and installing
+  the new one. The fear of causing downtime for the pool pump was a real concern.
+  However, by carefully planning and focusing on maintaining critical systems, I
+  was able to make the switch without any major issues.
 
 
 
