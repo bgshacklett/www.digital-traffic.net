@@ -4,9 +4,6 @@ title: >-
 date: 2024-11-29
 ---
 
-
-## Introduction
-
 When I bought my home a few years ago, a pool was an absolute requirement for
 me. Of course, I knew nothing about how pools operate, nor how to maintain
 them, but quickly found myself drinking from a firehose of knowledge on the
@@ -36,73 +33,63 @@ this seemed like the perfect excuse to try something a bit more concrete.
 <!-- more -->
 
 
-## Project Goals
+## Goals
 
 * Use Off-the-Shelf Parts
 
-  One of my primary goals was to build the entire system using readily
+  The biggest requirement was to build the entire system using readily
   available components. I wanted to ensure that any part of the system could be
   easily replaced without jumping through hoops or dealing with proprietary
-  restrictions. This approach keeps costs down and makes maintenance
-  straightforward.
+  restrictions. This makes maintenance straightforward and encourages future
+  experimentation.
 
-* Automated Provisioning of Software and Configuration
+* A Code-First Methodology
 
-  I believe that the configuration should be stored as code. This means I can
-  rebuild the entire system quickly because the build process is almost
-  entirely automated. It also serves as excellent documentation, providing a
-  clear record of how everything fits together.
+  I'm working hard to ensure that as much of the configuration as possible is
+  stored in a Git repository and deployed via automation tools. This means I
+  can rebuild the entire system quickly because the build process is almost
+  entirely automated. A code-first approach also serves as excellent
+  documentation, providing a clear record of how everything fits together.
 
-* Open Project
 
-  While I'm not actively encouraging collaboration just yet, I'm excited to
-  share what I've learned and put together with likeminded folks. My hope is
-  that others can use what I've built as a starting point for their own
-  projects or find inspiration in the solutions I've implemented.
+## Major Hardware Components
 
-* Improved User Interface and Control
-
-  The old system was not only outdated but also lacked a user-friendly
-  interface. The loss of the keypad next to the spa led to many freezing cold
-  trips over to the pump and heater to make adjustments. With swimctl, I aimed
-  to use my existing home automation tools to create a modern interface that
-  offers better control over all pool equipment.
-
-* Integration with Home Assistant
-
-  Integration with Home Assistant allows for easy access right from the warmth
-  of the hot tub. I can control various aspects of the pool system remotely and
-  even automate control them based on other external factors. For example, I
-  could change how long the pump runs based on the weather, saving some
-  precious pennies on my electricity bill.
-
-## Hardware Components
-
-* Raspberry Pi Running Kubernetes
+* Raspberry Pi
 
   For the brain of the operation, I chose a Raspberry Pi. Its ubiquity in IoT
   and automation applications made it an obvious choice. It's inexpensive,
   widely supported, and comes with the necessary connectivity options like I²C
   and GPIO, making it well-suited for controlling and gathering data from
-  external components. I originally considered an Arduino, or other
-  microcontroller, but the availability of software like Node-Red pushed me to
-  use a full single board computer. I'm thankful that I made this choice,
-  because it's been a lot of work getting to where I am without having to write
-  the amount of code that a microcontroller would have required.
+  external components.
 
-  Running Kubernetes on the Raspberry Pi might sound like overkill, but it
-  aligns with my goal of configuration as code. Kubernetes provides an
-  abstraction layer that allows me to tie in many pre-existing automation tools
-  to handle provisioning and manage the system more effectively.
+  I originally considered an Arduino, or other microcontroller, but the
+  availability of software like Node-Red pushed me to use a full single board
+  computer. I'm thankful that I made this choice, because it's been a lot of
+  work getting to where I am _without_ having to write the amount of custom
+  code that a microcontroller would have required.
+
+  Looking down the road, the one to one compatibility with Pi compute modules
+  means I can take advantage of the industry's enthusiasm for that platform.
+  There are already [many solutions](https://pipci.jeffgeerling.com/boards_cm)
+  out there which use the CM4 for compute. I imagine a future iteration may end
+  up using something akin to the [Techbase ModBerry 500
+  CM4](https://modberry.techbase.eu/compute-module-4/), though I'd prefer a
+  bit slimmer form factor.
+
+  The overall flexibility of the Pi ecosystem allows for taking projects from
+  initial prototyping to a fully productionalized solution, all while using the
+  same platform.
 
 * Sequent Microsystems Relay Boards
 
-  To control the various pool functions, I knew I needed some relays. I looked
-  around at many different solutions until I stumbled upon Sequent
-  Microsystems' relay boards. These boards are stackable and using two of them
-  gave me a total of 16 relays. They integrate seamlessly with the Raspberry
-  Pi, and they have pre-built nodes for Node-Red, making them an efficient
-  choice for managing multiple devices with very little effort.
+  Relays are at the heart of most of what the system does. I looked around at
+  many different solutions and eventually stumbled upon [Eight Relays 4A/120V
+  8-Layer Stackable
+  HAT](https://sequentmicrosystems.com/products/8-relays-stackable-card-for-raspberry-pi).
+  Up to eight of these can be stacked onto a single Pi, and using two of them
+  gave me a total of 16 SPDT relays. They integrate seamlessly with the
+  Raspberry Pi, and they have pre-built nodes for Node-Red, making them an
+  efficient choice for managing multiple devices with very little effort.
 
 * 24VAC Components
 
@@ -110,27 +97,28 @@ this seemed like the perfect excuse to try something a bit more concrete.
   valve actuators, run on 24VAC. Finding the right transformer for these was a
   bit of a challenge. It took me some time to choose one, and I'm still not
   entirely sure I made the best choice. I think I might be able to switch it
-  out for a smaller unit without losing any functionality. Safety Measures
+  out for a smaller unit without losing any functionality.
 
-Safety was a significant consideration in the design, because the automation
-system functions, partially, as a load center for the pool equipment. Each
-major section of the panel has dedicated circuit breakers. This not only allows
-for the use of smaller gauge (less expensive and more flexible) wire but also
-enables isolation for troubleshooting purposes. By being able to cut power to
-specific sections, I can work on the system more safely and efficiently.
+* Enclosure
 
-I started by experimenting with a 2×2-foot sheet of plywood from a local
-big-box store. Mounting DIN rails onto the plywood allowed me to get a rough
-idea of how the components would fit together inside an enclosure. This
-hands-on approach helped me visualize the layout and make adjustments before
-committing to a final design.
+  For the enclosure, I opted for an IP67 Plastic Enclosure from Gratury purchased
+  on Amazon. This enclosure features a removable backplate with a grid of
+  pre-formed holes, making it easy to mount components securely. The IP67 rating,
+  plus waterproof cable glands ensure that the system is well-protected from the
+  elements. I opted for the 20″ × 16.1″ × 7.9″ box, which fit quite nicely in the
+  space left by the old system.
 
-For the enclosure, I opted for an IP67 Plastic Enclosure from Gratury purchased
-on Amazon. This enclosure features a removable backplate with a grid of
-pre-formed holes, making it easy to mount components securely. The IP67 rating,
-plus waterproof cable glands ensure that the system is well-protected from the
-elements. I opted for the 20″ × 16.1″ × 7.9″ box, which fit quite nicely in the
-space left by the old system.
+
+* Circuit Protection
+
+  Because the automation system functions, partially, as a load center for the
+  pool equipment, each major section of the panel has dedicated circuit
+  breakers. This not only allows for the use of smaller gauge (less expensive
+  and more flexible) wire but also enables isolation for troubleshooting
+  purposes. By being able to cut power to specific sections, I can work on the
+  system more safely and efficiently.
+
+
 
 
 ## Software Architecture
@@ -140,6 +128,11 @@ with Home Assistant. I chose Node-RED because of its strong community support
 and widespread use in similar automation solutions. It provided the flexibility
 and functionality I needed without a steep learning curve. Kubernetes for
 Abstraction and Automation
+
+  Running Kubernetes on the Raspberry Pi might sound like overkill, but it
+  aligns with my goal of configuration as code. Kubernetes provides an
+  abstraction layer that allows me to tie in many pre-existing automation tools
+  to handle provisioning and manage the system more effectively.
 
 By running Kubernetes on the Raspberry Pi, I achieved a level of abstraction
 that simplifies deployment and management. Kubernetes helps automate the
@@ -155,7 +148,9 @@ real-time control and monitoring.
 Implementing this integration was challenging at first. The MQTT discovery
 specification is detailed and requires careful implementation. It took some
 experimenting to understand how to structure the messages and topics properly,
-but the effort paid off with a seamless integration. Implementation Progress
+but the effort paid off with a seamless integration.
+
+## Implementation
 
 During the transition from the old automation unit to the new panel, I ensured
 that the most critical component (the pump) was only offline for a short while,
@@ -168,8 +163,6 @@ different way of thinking from Python, or Java, and integrating with Home
 Assistant required a lot of reading and looking at what other people have done.
 Overall, though, I'm pleased with how it's coming together. I expect to achieve
 full functionality (if not stability) within the next few weeks. Technical
-
-## Challenges
 
 * Integrating Node-RED with MQTT
 
@@ -185,6 +178,12 @@ about industrial components like DIN-mounted terminal blocks, relays, and
 transformers required research and patience. Starting with a plywood mock-up
 helped, but there were still multiple iterations to optimize the layout and
 functionality.
+
+I started by experimenting with a 2×2-foot sheet of plywood from a local
+big-box store. Mounting DIN rails onto the plywood allowed me to get a rough
+idea of how the components would fit together inside an enclosure. This
+hands-on approach helped me visualize the layout and make adjustments before
+committing to a final design.
 
 * Finding the Right Transformer
 
@@ -211,13 +210,6 @@ was able to make the switch without any major issues.
 
 ## Unique Features and Innovations
 
-Open-Source Approach
-
-While collaboration isn't my primary focus right now, I'm looking forward to
-sharing swimctl with others once it's complete. By using off-the-shelf parts
-and open-source software, I hope to provide a foundation that others can build
-upon or adapt to their own needs.
-
 * Off-the-Shelf Components
 
 Using readily available components means that maintenance and replacements are
@@ -236,6 +228,16 @@ customize it to suit specific needs or preferences.
 The seamless integration with Home Assistant adds significant value. It allows
 for advanced automation, such as scheduling, remote access, and the ability to
 trigger actions based on other events within the home automation ecosystem.
+
+
+* Integration with Home Assistant
+
+  Integration with Home Assistant allows for easy access right from the warmth
+  of the hot tub. I can control various aspects of the pool system remotely and
+  even automate control them based on other external factors. For example, I
+  could change how long the pump runs based on the weather, saving some
+  precious pennies on my electricity bill.
+
 
 
 ## User Interface and Experience
@@ -301,12 +303,6 @@ published, it will require significant effort, including potentially
 reverse-engineering protocols and collaborating with others who have tackled
 similar challenges.
 
-* Community Engagement
-
-Once the MVP is complete, I'll be sharing the project openly. While I'm not
-actively seeking collaboration at this stage, I'm excited about the possibility
-of others using what I've developed and potentially contributing their own
-ideas and improvements.
 
 ## Conclusion
 
@@ -336,3 +332,15 @@ Node-RED: https://nodered.org/ Home Assistant MQTT Discovery:
 https://www.home-assistant.io/integrations/mqtt/#mqtt-discovery Sequent
 Microsystems Relay Boards: https://sequentmicrosystems.com/ Gratury Junction
 Box: Amazon Product Page UL-508A Standards: UL Standards
+
+
+### Glossary
+
+*[SPDT]: Single Pole Double Throw
+<dl>
+    <dt>Single Pole Double Throw (SPDT)</dt>
+    <dd>
+        An electrical switch that has one common terminal (pole) and can connect it to
+        one of two different output terminals (throws).
+    </dd>
+</dl>
