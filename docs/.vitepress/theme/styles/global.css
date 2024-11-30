@@ -87,3 +87,7 @@ h3,
   font-size: var(--heading-font-size-3);
   line-height: var(--heading-line-height-3);
 }
+
+.vp-doc h2 .header-anchor {
+  top: 0;
+}
