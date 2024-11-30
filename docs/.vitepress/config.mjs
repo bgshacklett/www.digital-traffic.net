@@ -1,5 +1,9 @@
 import { defineConfig } from 'vitepress'
 
+// Third Party Plugins
+import { abbr } from '@mdit/plugin-abbr'
+
+
 export default defineConfig({
   // app level config options
   lang: 'en-US',
@@ -20,6 +24,9 @@ export default defineConfig({
   lastUpdated: true,
 
   markdown: {
+    config(md) {
+      md.use(abbr);
+    },
     frontmatter: {
       grayMatterOptions: {
         excerpt: true,
