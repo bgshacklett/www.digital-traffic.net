@@ -21,7 +21,7 @@ export default withMermaid({
       }
     ],
   ],
-  mpa: true,
+  mpa: false,
   lastUpdated: true,
 
   markdown: {
