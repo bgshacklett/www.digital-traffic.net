@@ -112,12 +112,23 @@ div.svg-container-noderedjson {
   left: 0 !important;
 }
 
-figure.inline-right {
-  float: right;
+figure {
+  text-align: center;
+  margin: 2rem 0;
 }
 
-figure.inline-left {
+figure img {
+  margin: 0 auto;
+}
+
+figure:has(> img.inline-right) {
+  float: right;
+  margin-left: 1em;
+}
+
+figure:has(> img.inline-left) {
   float: left;
+  margin-right: 1em;
 }
 
 figcaption {
@@ -128,6 +139,8 @@ figcaption {
 figure img.post-banner {
   margin-top: 2rem;
   margin-bottom: 2rem;
+  margin-left: 0;
+  margin-right: 0;
   border-radius: 5px;
   border: 1px solid #666;
   box-shadow: 0px 0px 3px;

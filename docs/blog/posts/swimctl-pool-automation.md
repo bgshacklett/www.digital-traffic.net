@@ -216,7 +216,7 @@ sequenceDiagram
   helped me visualize the layout and make adjustments before committing to a
   final design.
 
-  ![Prototyping the panel on plywood](https://i.imgur.com/9GMIlUx.jpeg){inline-left}
+  [![Prototyping the panel on plywood](https://i.imgur.com/9GMIlUx.jpeg)](https://i.imgur.com/w2lpuc1.jpeg)
 
   Of course, one can plan only so far. There were quite a few changes that
   I needed to make while transferring everything into the enclosure, and even
@@ -247,6 +247,8 @@ sequenceDiagram
   and testing each component thoroughly. It effectively descoped almost
   everything from the absolute minimum viable product, allowing for quick
   iteration and addition of additional features to get to the desired outcome.
+
+  [![Installed Enclosure](https://i.imgur.com/LRFAMAv.jpeg)](https://i.imgur.com/ihKxJ39.jpeg)
 
 
 * Platform Implementation
@@ -305,27 +307,29 @@ sequenceDiagram
 
 
   The resulting compiled message is then formatted with a function node:
-  ```JavaScript
-  return { "payload": {
-      "dev": {
-          "ids": "swimctl-controller-01",
-          "name": "Pool Controller",
-          "mf": "Brian G. Shacklett",
-          "mdl": "01",
-          "sw": "0.1.0",
-          "sn": "00000001",
-          "hw": "0.1.0"
-      },
-      "o": {
-          "name": "swimctl",
-          "sw": "0.1.0",
-          "url": "https://github.com/bgshacklett/swimctl/issues"
-      },
-      "cmps": msg.payload,
-  "state_topic": "swimctl/system/state",
-      "qos": 2
-  }};
-  ```
+
+    ```JavaScript
+    return { "payload": {
+        "dev": {
+            "ids": "swimctl-controller-01",
+            "name": "Pool Controller",
+            "mf": "Brian G. Shacklett",
+            "mdl": "01",
+            "sw": "0.1.0",
+            "sn": "00000001",
+            "hw": "0.1.0"
+        },
+        "o": {
+            "name": "swimctl",
+            "sw": "0.1.0",
+            "url": "https://github.com/bgshacklett/swimctl/issues"
+        },
+        "cmps": msg.payload,
+    "state_topic": "swimctl/system/state",
+        "qos": 2
+    }};
+    ```
+
   ...and finally passed to the Home Assistant MQTT discovery topic:
   (`homeassistant/device/swimctl-controller-01/config`).
 
