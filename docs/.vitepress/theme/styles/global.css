@@ -103,3 +103,32 @@ h3,
   padding: revert;
   list-style-position: revert;
 }
+
+div.svg-container-noderedjson {
+  padding: 1rem;
+  border: 1px solid var(--border-color-posts);
+  border-radius: .25rem;
+  width: 100% !important;
+  left: 0 !important;
+}
+
+figure.inline-right {
+  float: right;
+}
+
+figure.inline-left {
+  float: left;
+}
+
+figcaption {
+  font-style: italic;
+  font-weight: 300;
+}
+
+figure img.post-banner {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  border-radius: 5px;
+  border: 1px solid #666;
+  box-shadow: 0px 0px 3px;
+}

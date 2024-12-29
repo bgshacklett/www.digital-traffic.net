@@ -1,18 +1,16 @@
 ---
 title: >-
     Building an Open Pool Automation Platform
-date: 2024-11-29
+date: 2024-12-29
 ---
 
+![](https://i.imgur.com/9VWJHYT.jpeg){class="post-banner"}
+
 When I became a new pool owner, I was quickly frustrated by the cost and lack
-of availability of parts for my aging pool automation system. After a good bit
-of research into how everything worked, I decided to do something about it.
-
-Now that it's feature complete, I wanted to show the result, including:
-
-* Hardware implementation
-* Software implementation with links to Node-RED flows and Kubernetes manifests
-* Integration with Home Assistant
+of availability of parts for its aging pool automation system. After educating
+myself about how everything worked, I decided to do something about it. Now
+that it's feature complete, I wanted to share what I've built and talk  a bit
+about how I got here.
 
 <!-- more -->
 
@@ -20,7 +18,7 @@ Now that it's feature complete, I wanted to show the result, including:
 
 * Use Off-the-Shelf Parts
 
-  The whole journey started because of the badly behaved companies who have a
+  This whole journey started because of badly behaved companies who have a
   stranglehold on the pool supply market, so the most important requirement was
   to build the entire system using readily available components. I wanted to
   ensure that any part of the system could be easily replaced without jumping
@@ -39,7 +37,7 @@ Now that it's feature complete, I wanted to show the result, including:
     * Ensure that the pump is running during spa operation
     * Run the blower when the spa is on
 
-* Control the New Pump
+* Speed Control for the New Pump
 
   In addition to the original features, I wanted the new system to control the
   speed of the variable speed pump I'd purchased to replace the old rusty
@@ -57,13 +55,13 @@ Now that it's feature complete, I wanted to show the result, including:
 
 ## Major Hardware Components
 
-* Raspberry Pi
+* Compute
 
-  For the brain of the operation, I chose a Raspberry Pi. Its ubiquity in IoT
-  and automation applications made it an obvious choice. It's inexpensive,
-  widely supported, and comes with the necessary connectivity options like I²C
-  and GPIO, making it well-suited for controlling and gathering data from
-  external components.
+  For the brain of the operation, I chose a Raspberry Pi (I'm sure you're
+  shocked). Its ubiquity in IoT and automation applications made it an obvious
+  choice. It's inexpensive, widely supported, and comes with the necessary
+  connectivity options like I²C and GPIO, making it well-suited for controlling
+  and gathering data from external components.
 
   I originally considered an Arduino, or other microcontroller, but the
   availability of software like Node-Red pushed me to use a full single board
@@ -83,11 +81,11 @@ Now that it's feature complete, I wanted to show the result, including:
   initial prototyping to a fully productionalized solution, all while using the
   same platform.
 
-* Sequent Microsystems Relay Boards
+* Computer-Controlled Relays
 
-  Relays are at the heart of most of what the system does. I looked around at
-  many different solutions and eventually stumbled upon Sequent Microsystems'
-  [Eight Relays 4A/120V 8-Layer Stackable
+  Relays are what tie the software to the real world. I looked around at many
+  different solutions and eventually stumbled upon Sequent Microsystems' [Eight
+  Relays 4A/120V 8-Layer Stackable
   HAT](https://sequentmicrosystems.com/products/8-relays-stackable-card-for-raspberry-pi).
   Up to eight of these can be stacked onto a single Pi, and using two of them
   gave me a total of 16 SPDT relays and a bonus RS-485/MODBUS port. They
@@ -137,6 +135,38 @@ Now that it's feature complete, I wanted to show the result, including:
   purposes. By being able to cut power to specific sections, I can work on the
   system more safely and efficiently.
 
+* Terminal blocks
+
+  With this many components all being wired together, it's important to have an
+  organized and space-efficient way to make all of the connections. Thankfully,
+  [this is a solved problem](https://www.realpars.com/blog/terminal-blocks).
+  Companies like [Wago](https://www.wago.com/us/discover-terminal-blocks),
+  [Phoenix
+  Contact](https://www.phoenixcontact.com/en-us/products/terminal-blocks) and
+  [Dinkle](https://www.dinkle.com/en/home) have developed some amazing systems
+  around din-mount terminal blocks. Pretty much any kind of connectivity or
+  distribution you need can be made way easier, and more space-efficient, with
+  these little molded plastic beauties.
+
+  Early into sourcing parts for the project, I found the [Dinkle DK2.5N
+  series](https://www.amazon.com/Color-DIN-Rail-Block-Kit/dp/B07NVV28D9)
+  terminal blocks, sold by [International
+  Connector](https://www.amazon.com/stores/InternationalConnector/page/121D90B6-FAA3-4F06-8AFA-66D5F4DDF93C)
+  on Amazon. They were the easiest things to get my hands on at the time,
+  and the kit comes with everything one needs to get started wiring things up,
+  which gave me a nice boost.
+
+  In the future, I'd like to go for some more premium components, now that I
+  have a better idea of what's available and how things need to be laid out in
+  the panel. I could save a ton of space on the bottom rail of the panel with
+  some two or three level blocks, but I'll save that for a rainy day.
+
+  If you're interested in building a panel and don't know where to start, Wago
+  has a great selection of [free
+  samples](https://www.wago.com/global/sample-service), so you can see what
+  they have to offer without having to commit to a big purchase or spend extra
+  money on low-quantity orders.
+
 
 ## Software Architecture
 
@@ -152,6 +182,8 @@ Kubernetes provides an abstraction layer that allows me to tie in many
 pre-existing automation mechanisms to handle provisioning and manage the system
 more effectively.
 
+<!-- TODO: Give examples of k8s helping with automation -->
+
 Integration with Home Assistant is facilitated through
 [MQTT](https://mqtt.org/) using [dynamic
 discovery](https://www.home-assistant.io/integrations/mqtt/#mqtt-discovery).
@@ -160,6 +192,18 @@ control messages via MQTT "control" topics, allowing for real-time control.
 Responses on corresponding "state" topics allow Node-Red to update Home
 Assistant as to the current state of the controller and its exposed devices.
 
+```mermaid
+sequenceDiagram
+    participant swimctl
+    participant discovery as Discovery Topic
+    participant tstate as State Topic
+    participant HA as Home Assistant
+
+    swimctl->>discovery: Put Device Metadata
+    swimctl->>tstate: Put Device State
+    HA->>discovery: Read Device Metadata
+    HA->>tstate: Read Device State
+```
 
 ## Implementation
 
@@ -169,26 +213,21 @@ Assistant as to the current state of the controller and its exposed devices.
   panels, I started by experimenting with a 2×2-foot sheet of plywood from a
   local big-box store. Mounting DIN rails onto the plywood allowed me to get a
   rough idea of how the components would fit together inside an enclosure. This
-  hands-on approach helped me visualize the layout and make adjustments before
-  committing to a final design.
+  helped me visualize the layout and make adjustments before committing to a
+  final design.
 
-  <!-- ![prototyping the panel on plywood](images/) -->
+  ![Prototyping the panel on plywood](https://i.imgur.com/9GMIlUx.jpeg){inline-left}
 
-  I've put some effort in to align to UL-508A standards, which govern the design and
-  implementation of industrial control panels. Realistically, though, I'm quite
-  sure there are things that I've missed. Still, it's been very helpful to be able
-  to lean on well documented specifications.
+  Of course, one can plan only so far. There were quite a few changes that
+  I needed to make while transferring everything into the enclosure, and even
+  more after getting the enclosure mounted. Next time around, I'll do a lot
+  more work to mark out the boundaries of everything while keeping additional
+  space between the edge of the enclosure and the components.
 
-
-* A Code-First Methodology
-
-  I'm working hard to ensure that as much of the configuration as possible is
-  stored in a Git repository and deployed via automation tools. This means I
-  can rebuild the entire system quickly because the build process is almost
-  entirely automated. A code-first approach also serves as excellent
-  documentation, providing a clear record of how everything fits together.
-  Hopefully this translates to serving as a solid resource to others facing
-  similar problems.
+  I'll also be more careful to take note of all of the incoming connections, as
+  I'd missed a few, including the wiring for the Spa blower. Thankfully,
+  I kept some additional space for growth in the original layout, so I ended up
+  being able to fit everything without a huge amount of trouble.
 
 
 * Transitioning Systems
@@ -210,345 +249,62 @@ Assistant as to the current state of the controller and its exposed devices.
   iteration and addition of additional features to get to the desired outcome.
 
 
+* Platform Implementation
+
+  While setting up Node-RED I've focused on storing configuration in source
+  control and deploying via automation tools, wherever it's reasonable to do
+  so. This enables the system to be rebuilt quickly, because the process is
+  almost entirely automated. Using Kubernetes gave me a nice framework to
+  handle the lifecycle of all of the software components. For example, Node-RED
+  is provisioned via HELM, and an init container runs prior to the Node-RED
+  container to ensure that all of the required dependencies in place:
+  https://github.com/bgshacklett/swimctl/blob/main/values.yml#L82-L121.
+
+  This code-first approach also serves as excellent documentation, providing a
+  clear record of how everything fits together, which never goes out of date.
+  Hopefully this translates to serving as a solid resource to others facing
+  similar problems.
+
+
 * First Experiences with Node-Red
 
   Programming in Node-RED required a different way of thinking from e.g.:
-  Python, or Java, and integrating with Home Assistant required a lot of
-  reading and looking at what other people have done. Overall, though, it's
-  been a fantastic experience, and I'm pleased with how it's come together.
-  I've been a fan of event-driven architectures for a long time, and it's been
-  great to really dive into that world. I imagine what I've learned here will
-  help me think about the code I write on a daily basis in a new light.
+  Python, or Java. It's been a great experience so far. I've been a fan of
+  event-driven architectures for a long time, and it's been great to really
+  dive into that model. I imagine what I've learned here will have a good deal
+  of influence on the code I write on a daily basis.
 
-  At the moment, it's feature complete, and I'm able to control everything I
-  set out to in the original project goals. The biggest thing I've noticed with
-  Node-Red versus other programming languages is the level of certainty that I
-  have at any given point in the flow. I feel like I've got a lot more control
-  over what messages are passing through the system, and theres far less effort
-  required dealing with unknowns.
+  The biggest thing I've noticed with Node-Red versus other programming
+  tools is the level of certainty that I have at any given point in the
+  flow. I feel like I've got a lot more control over the state of the system,
+  reducing the need for exception handling. I suppose time will tell whether
+  this is really the case, as the system sees real operation.
 
 
-* Integrating Node-RED with MQTT
+* Integrating Node-RED with Home Assistant
 
-  This was a bit challenging to understand, at first. The MQTT discovery
-  specification is quite well documented, but I had difficulty finding any
-  guidance on implementation via Node-Red. It took a good deal of experimenting
-  to understand how to provide and collect metadata for each component, how to
-  structure the messages and topics properly, and how and when to trigger the
-  discovery messages.
+  Device discovery via MQTT was a bit challenging to understand. The
+  specification is well documented, but I had difficulty finding any
+  guidance or examples of implementation via Node-Red. It took a good deal of
+  experimenting to understand how to provide and collect metadata for each
+  component, how to structure the messages and topics properly, and how and
+  when to trigger the discovery messages.
 
-  Eventually, I came up with this flow which initiates the metadata collection
-  and sends the appropriate message to the MQTT config topic:
+  Eventually, I came up with a nice re-usable pattern.
 
-  ```noderedjson with-linklines with-download-link
-  [
-      {
-          "id": "03928a46de37cade",
-          "type": "tab",
-          "label": "MQTT Discovery",
-          "disabled": false,
-          "info": "",
-          "env": []
-      },
-      {
-          "id": "ce2ae99a0f8d9c93",
-          "type": "mqtt out",
-          "z": "03928a46de37cade",
-          "name": "Home Assistant MQTT Discovery",
-          "topic": "homeassistant/device/swimctl-controller-01/config",
-          "qos": "2",
-          "retain": "false",
-          "respTopic": "",
-          "contentType": "application/json",
-          "userProps": "",
-          "correl": "",
-          "expiry": "",
-          "broker": "3fbc57f2c63e2a25",
-          "x": 800,
-          "y": 420,
-          "wires": []
-      },
-      {
-          "id": "central_metadata_input",
-          "type": "link in",
-          "z": "03928a46de37cade",
-          "name": "Metadata Input",
-          "links": [
-              "8477439e60fc5c07",
-              "2197c0ec581e0457",
-              "aa83f5464328da17",
-              "ecf9ce2c588f0c8f",
-              "81925d77aaee4a08",
-              "1a54f5bf9b5b7ddc",
-              "f9428519a776ea91",
-              "63632c887cc6a11c",
-              "da428207d3c07107",
-              "5200deef5d5b28c9",
-              "1341090827c116ed",
-              "cea254f729d34a0c",
-              "3165b7d0ce0ea93e",
-              "631d5762c053ac56"
-          ],
-          "x": 115,
-          "y": 420,
-          "wires": [
-              [
-                  "6f288140b05f4938",
-                  "04cc717d69835bf1"
-              ]
-          ]
-      },
-      {
-          "id": "6f288140b05f4938",
-          "type": "join",
-          "z": "03928a46de37cade",
-          "name": "",
-          "mode": "custom",
-          "build": "merged",
-          "property": "payload",
-          "propertyType": "msg",
-          "key": "topic",
-          "joiner": "\\n",
-          "joinerType": "str",
-          "accumulate": true,
-          "timeout": "1",
-          "count": "12",
-          "reduceRight": false,
-          "reduceExp": "",
-          "reduceInit": "{}",
-          "reduceInitType": "num",
-          "reduceFixup": "",
-          "x": 230,
-          "y": 420,
-          "wires": [
-              [
-                  "be87fe8d4b0d9575",
-                  "7c5264703d680638"
-              ]
-          ]
-      },
-      {
-          "id": "be87fe8d4b0d9575",
-          "type": "function",
-          "z": "03928a46de37cade",
-          "name": "Format Discovery Message",
-          "func": "return { \"payload\": {\n    \"dev\": {\n        \"ids\": \"swimctl-controller-01\",\n        \"name\": \"Pool Controller\",\n        \"mf\": \"Brian G. Shacklett\",\n        \"mdl\": \"01\",\n        \"sw\": \"0.1.0\",\n        \"sn\": \"00000001\",\n        \"hw\": \"0.1.0\"\n    },\n    \"o\": {\n        \"name\": \"swimctl\",\n        \"sw\": \"0.1.0\",\n        \"url\": \"https://github.com/bgshacklett/swimctl/issues\"\n    },\n    \"cmps\": msg.payload,\n\"state_topic\": \"swimctl/system/state\",\n    \"qos\": 2\n}};",
-          "outputs": 1,
-          "noerr": 0,
-          "initialize": "",
-          "finalize": "",
-          "libs": [],
-          "x": 480,
-          "y": 420,
-          "wires": [
-              [
-                  "f80e7ec7634438a6",
-                  "ce2ae99a0f8d9c93"
-              ]
-          ]
-      },
-      {
-          "id": "7c5264703d680638",
-          "type": "debug",
-          "z": "03928a46de37cade",
-          "name": "Join",
-          "active": false,
-          "tosidebar": true,
-          "console": false,
-          "tostatus": false,
-          "complete": "payload",
-          "targetType": "msg",
-          "statusVal": "",
-          "statusType": "auto",
-          "x": 410,
-          "y": 380,
-          "wires": []
-      },
-      {
-          "id": "04cc717d69835bf1",
-          "type": "debug",
-          "z": "03928a46de37cade",
-          "name": "Link In",
-          "active": false,
-          "tosidebar": true,
-          "console": false,
-          "tostatus": false,
-          "complete": "payload",
-          "targetType": "msg",
-          "statusVal": "",
-          "statusType": "auto",
-          "x": 230,
-          "y": 380,
-          "wires": []
-      },
-      {
-          "id": "f80e7ec7634438a6",
-          "type": "debug",
-          "z": "03928a46de37cade",
-          "name": "Discovered Devices",
-          "active": true,
-          "tosidebar": true,
-          "console": true,
-          "tostatus": false,
-          "complete": "payload",
-          "targetType": "msg",
-          "statusVal": "",
-          "statusType": "auto",
-          "x": 760,
-          "y": 380,
-          "wires": []
-      },
-      {
-          "id": "bd894822a26f7320",
-          "type": "mqtt in",
-          "z": "03928a46de37cade",
-          "name": "Home Assistant Status",
-          "topic": "homeassistant/status",
-          "qos": "2",
-          "datatype": "utf8",
-          "broker": "3fbc57f2c63e2a25",
-          "nl": false,
-          "rap": true,
-          "rh": 0,
-          "inputs": 0,
-          "x": 200,
-          "y": 160,
-          "wires": [
-              [
-                  "6e5f91f6b8c2d5b1",
-                  "1884ca75e1d54add"
-              ]
-          ]
-      },
-      {
-          "id": "6e5f91f6b8c2d5b1",
-          "type": "debug",
-          "z": "03928a46de37cade",
-          "name": "Home Assistant Status",
-          "active": false,
-          "tosidebar": true,
-          "console": false,
-          "tostatus": false,
-          "complete": "payload",
-          "targetType": "msg",
-          "statusVal": "",
-          "statusType": "auto",
-          "x": 460,
-          "y": 120,
-          "wires": []
-      },
-      {
-          "id": "1884ca75e1d54add",
-          "type": "switch",
-          "z": "03928a46de37cade",
-          "name": "",
-          "property": "payload",
-          "propertyType": "msg",
-          "rules": [
-              {
-                  "t": "eq",
-                  "v": "online",
-                  "vt": "str"
-              },
-              {
-                  "t": "eq",
-                  "v": "offline",
-                  "vt": "str"
-              }
-          ],
-          "checkall": "true",
-          "repair": false,
-          "outputs": 2,
-          "x": 410,
-          "y": 160,
-          "wires": [
-              [
-                  "f217ef5ba3dfbcd4"
-              ],
-              []
-          ]
-      },
-      {
-          "id": "f217ef5ba3dfbcd4",
-          "type": "link out",
-          "z": "03928a46de37cade",
-          "name": "Home Assistant Startup",
-          "mode": "link",
-          "links": [
-              "d81339ab9952fb29",
-              "75323951ea67af27",
-              "206f4aff1ccea06b",
-              "660c1d21eeed30fd",
-              "4601c678b5cb434e",
-              "9477f33b0ea7fdd3",
-              "35eb824690bc32c0",
-              "1681669572348d99",
-              "abf9f0f5a5289164",
-              "c877f98f67de0934",
-              "84cef76c6b3a453d",
-              "10f65557c2e64ce7",
-              "79e522e98af395be",
-              "9b105cbc5960b448"
-          ],
-          "x": 525,
-          "y": 160,
-          "wires": []
-      },
-      {
-          "id": "86f876a33ad41dc3",
-          "type": "comment",
-          "z": "03928a46de37cade",
-          "name": "Trigger discovery on Home Assistant Startup",
-          "info": "",
-          "x": 270,
-          "y": 60,
-          "wires": []
-      },
-      {
-          "id": "dd0e20bb968a42e6",
-          "type": "comment",
-          "z": "03928a46de37cade",
-          "name": "Publish Discovery Messages",
-          "info": "",
-          "x": 220,
-          "y": 320,
-          "wires": []
-      },
-      {
-          "id": "3fbc57f2c63e2a25",
-          "type": "mqtt-broker",
-          "name": "Mosquitto (Home Assistant)",
-          "broker": "192.168.4.74",
-          "port": "1883",
-          "clientid": "",
-          "autoConnect": true,
-          "usetls": false,
-          "protocolVersion": "5",
-          "keepalive": "60",
-          "cleansession": true,
-          "birthTopic": "swimctl/system/status",
-          "birthQos": "2",
-          "birthPayload": "starting",
-          "birthMsg": {
-              "contentType": "text/plain"
-          },
-          "closeTopic": "swimctl/system/status",
-          "closeQos": "2",
-          "closePayload": "stopping",
-          "closeMsg": {
-              "contentType": "text/plain"
-          },
-          "willTopic": "swimctl/system/status",
-          "willQos": "0",
-          "willPayload": "offline",
-          "willMsg": {},
-          "userProps": "",
-          "sessionExpiry": ""
-      }
-  ]
-  ```
+  Each flow is configured to send a metadata message on startup, containing the
+  entities which it controls:
 
-  This joins multiple entity-level messages together via a function node:
+  ![](https://i.imgur.com/LTz7638.png)
+
+  These entity-level messages are collected by a link-in node and joined
+  together via a join node, set to wait for the number of messages equal to the
+  number of entities being exposed:
+
+  ![](https://i.imgur.com/OgxtGk7.png)
+
+
+  The resulting compiled message is then formatted with a function node:
   ```JavaScript
   return { "payload": {
       "dev": {
@@ -570,11 +326,33 @@ Assistant as to the current state of the controller and its exposed devices.
       "qos": 2
   }};
   ```
+  ...and finally passed to the Home Assistant MQTT discovery topic:
+  (`homeassistant/device/swimctl-controller-01/config`).
+
+  Lastly, Node-RED listens to Home Assistant's status topic
+  (`homeassistant/status`) and triggers discovery on the event that Home
+  Asstant starts/restarts. This ensures that the device and its entities are
+  refreshed in Home Assistant when it comes up:
+
+  ![](https://i.imgur.com/p4HvMCc.png)
+
   I'm sure there's room for improvement here, but so far it's been rock solid.
   Every time the system comes up, or Home Assistant reboots, the metadata for
   all entities, plus the device, gets collected and sent over to HA. So far, I
   haven't seen a single case where a "finished" component has displayed any
   unexpected behaviors.
+
+    > [!NOTE]
+    > One area of difficulty that I ran into was with abbreviations in the
+    > discovery payload. You'll likely note that many of the identifiers in
+    > this payload are quite terse. This is per the
+    > [examples](https://www.home-assistant.io/integrations/mqtt/#device-discovery-payload)
+    > in the Home Assistant documentation. There _is_ a section on [Supported
+    > Abbreviations](https://www.home-assistant.io/integrations/mqtt/#supported-abbreviations-in-mqtt-discovery-messages),
+    > which indicates that longer versions of some identifiers could be used,
+    > but my devices failed to show up in HA when using them. With more
+    > important things to focus on, I fell back to the exact format in the
+    > given examples.
 
 
 ## Results
@@ -586,13 +364,6 @@ computers. I also plan to set up some simple scene controllers that should
 make it easy to operate without requiring a device on the network. Zooz makes
 some great z-wave devices, including scene controllers, which should fit the
 bill.
-
-This project has been a fantastic learning opportunity. I've learned a great
-deal about industrial automation components, how to work effectively with
-Node-RED, and improved my overall understanding of automation systems.
-
-Most importantly, it's been a ton of fun. Combining my interests in automation
-and technology to solve a real-world problem has been incredibly fulfilling.
 
 
 ## Future Enhancements
@@ -618,7 +389,7 @@ and technology to solve a real-world problem has been incredibly fulfilling.
 
 * Advanced Equipment Control
 
-  One of my more ambitious plans is to switch from using relays to control the
+  One of my more ambitious goals is to switch from using relays to control the
   pump and heater to using RS-485 communication. This will allow for more
   precise control and monitoring, plus freeing up a number of relays and a
   good amount of space in the enclosure. Unfortunately, the messaging
@@ -630,27 +401,32 @@ and technology to solve a real-world problem has been incredibly fulfilling.
 
 ## Conclusion
 
-  It has been an incredible journey. From grappling with outdated systems and
-  restrictive corporate practices to designing and implementing my own
-  solution, I've learned a great deal. The challenges were numerous, but each
-  one offered an opportunity to grow and learn.
-
   I'm happy to have the system feature complete, though I doubt I'll ever stop
   tweaking, and I'm excited to share it with others who might benefit from my
   experiences. I hope this serves as a useful resource and source of
-  inspiration to others who are interested in similar undertakings.
+  inspiration to others who are interested in similar undertakings. I'm adding
+  links to the most important resources below, as well as the GitHub
+  repositories for both the underlying platform and the flows which are
+  currently running.
+
+  Everything is very much in a beta state, so please don't judge the code too
+  harshly (though constructive suggestions are welcome). Hopefully it'll
+  serve as a helpful resource none-the-less.
 
 
 ## Appendix
 
 ### References
 
+* Software Configuration Repository: https://github.com/bgshacklett/swimctl/tree/main
+* Node-RED Flows: https://github.com/bgshacklett/swimctl-flows
 * Node-RED: https://nodered.org/
-* Home Assistant MQTT Discovery:
+* Home Assistant MQTT Discovery documentation:
   https://www.home-assistant.io/integrations/mqtt/#mqtt-discovery
 * Sequent Microsystems: https://sequentmicrosystems.com/
 * Gratury Junction Box: https://www.amazon.com/gp/product/B0BFPW79LS?psc=1
 * UL-508A Standards: https://www.ul.com/resources/ul-508a-third-edition-summary-requirements
+* RealPars--Terminal Blocks Explained: https://www.realpars.com/blog/terminal-blocks
 
 ### Glossary
 

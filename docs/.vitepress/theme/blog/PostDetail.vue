@@ -24,6 +24,7 @@ const prevPost = computed(() => posts[findCurrentIndex() + 1])
     <a v-if="prevPost" :href="prevPost.url" class=""> Previous Post</a>
     <a v-if="nextPost" :href="nextPost.url" class="">Next Post</a>
   </div>
+
 </template>
 
 <style scoped>

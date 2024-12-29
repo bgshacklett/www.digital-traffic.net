@@ -11,7 +11,6 @@ import './styles/global.css'
 
 const { path } = useRoute()
 const { frontmatter } = useData()
-
 </script>
 
 
