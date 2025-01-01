@@ -64,7 +64,7 @@ about how I got here.
   and gathering data from external components.
 
   I originally considered an Arduino, or other microcontroller, but the
-  availability of software like Node-Red pushed me to use a full single board
+  availability of software like Node-RED pushed me to use a full single board
   computer. I'm thankful that I made this choice, because it's been a lot of
   work getting to where I am _without_ having to write the amount of custom
   code that a microcontroller would have required.
@@ -90,7 +90,7 @@ about how I got here.
   Up to eight of these can be stacked onto a single Pi, and using two of them
   gave me a total of 16 SPDT relays and a bonus RS-485/MODBUS port. They
   integrate seamlessly with the Raspberry Pi, via I²C which leaves all of the
-  GPIO pins open, and they have pre-built nodes for Node-Red, plus among a
+  GPIO pins open, and they have pre-built nodes for Node-RED, plus among a
   number of other integrations. All told, they've proved an efficient choice
   for managing multiple devices with very little effort.
 
@@ -189,7 +189,7 @@ Integration with Home Assistant is facilitated through
 discovery](https://www.home-assistant.io/integrations/mqtt/#mqtt-discovery).
 Node-RED sends metadata about the entities it exposes. It then listens for
 control messages via MQTT "control" topics, allowing for real-time control.
-Responses on corresponding "state" topics allow Node-Red to update Home
+Responses on corresponding "state" topics allow Node-RED to update Home
 Assistant as to the current state of the controller and its exposed devices.
 
 ```mermaid
@@ -255,7 +255,7 @@ sequenceDiagram
 
   While setting up Node-RED I've focused on storing configuration in source
   control and deploying via automation tools, wherever it's reasonable to do
-  so. This enables the system to be rebuilt quickly, because the process is
+ so. This enables the system to be rebuilt quickly, because the process is
   almost entirely automated. Using Kubernetes gave me a nice framework to
   handle the lifecycle of all of the software components. For example, Node-RED
   is provisioned via HELM, and an init container runs prior to the Node-RED
@@ -268,7 +268,7 @@ sequenceDiagram
   similar problems.
 
 
-* First Experiences with Node-Red
+* First Experiences with Node-RED
 
   Programming in Node-RED required a different way of thinking from e.g.:
   Python, or Java. It's been a great experience so far. I've been a fan of
@@ -276,7 +276,7 @@ sequenceDiagram
   dive into that model. I imagine what I've learned here will have a good deal
   of influence on the code I write on a daily basis.
 
-  The biggest thing I've noticed with Node-Red versus other programming
+  The biggest thing I've noticed with Node-RED versus other programming
   tools is the level of certainty that I have at any given point in the
   flow. I feel like I've got a lot more control over the state of the system,
   reducing the need for exception handling. I suppose time will tell whether
@@ -287,7 +287,7 @@ sequenceDiagram
 
   Device discovery via MQTT was a bit challenging to understand. The
   specification is well documented, but I had difficulty finding any
-  guidance or examples of implementation via Node-Red. It took a good deal of
+  guidance or examples of implementation via Node-RED. It took a good deal of
   experimenting to understand how to provide and collect metadata for each
   component, how to structure the messages and topics properly, and how and
   when to trigger the discovery messages.
