@@ -1,6 +1,11 @@
-import { defineConfig } from 'vitepress'
+import { withMermaid } from "vitepress-plugin-mermaid";
+import { figure } from "@mdit/plugin-figure";
 
-export default defineConfig({
+// Third Party Plugins
+import { abbr } from '@mdit/plugin-abbr'
+
+
+export default withMermaid({
   // app level config options
   lang: 'en-US',
   title: 'digital-traffic.net',
@@ -14,26 +19,30 @@ export default defineConfig({
         defer: true,
         type: 'text/javascript'
       }
-    ]
+    ],
   ],
-  mpa: true,
+  mpa: false,
   lastUpdated: true,
 
   markdown: {
+    config(md) {
+      md.use(abbr)
+        .use(figure, {
+          // your options, optional
+        });
+    },
     frontmatter: {
       grayMatterOptions: {
         excerpt: true,
         excerpt_separator: '<!-- more -->',
       },
-    }
+    },
   },
 
   vite: {
     logLevel: 'info',
     publicDir: 'public',
   },
-
-  plugins: [],
 
   // theme level config options
   themeConfig: {
