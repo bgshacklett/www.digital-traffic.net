@@ -53,7 +53,7 @@ about how I got here.
   enable choosing from one of two preset temperatures depending on use. 
 
 
-## Major Hardware Components
+## Hardware Design and Components
 
 * Compute
 
@@ -166,6 +166,58 @@ about how I got here.
   samples](https://www.wago.com/global/sample-service), so you can see what
   they have to offer without having to commit to a big purchase or spend extra
   money on low-quantity orders.
+
+
+### Integrations
+
+Currently, the hardware integrations are all based around relays either closing
+or opening circuits. Some components are capable of being controlled via
+RS-485, but that's future me's problem.
+
+* The lights and the blower are the simplest. The Normally Open contact of the
+  Pi's onboard relay is connected to a 24VAC source which powers the coil of a
+  higher-amperage external relay. This higher-amperage relay switches the actual
+  load. Nothing particularly interesting here.
+
+* The pump ([a SuperMax®
+  VS](https://www.pentair.com/en-us/products/residential/pool-spa-equipment/pool-pumps/supermax_vs_variablespeedpump.html)),
+  provides two different methods of connecting: RS-485 or digital (on-off for
+  each speed). Given the complexity and proprietary nature of RS-485
+  communications, I've opted for digital signalling for the time being.
+
+  The digital signalling is handled by shorting one of four mode lines to the
+  built-in signal line provided by the pump:
+
+  ![](https://i.imgur.com/xKD729X.png)
+
+  It's also possible to use an external source for signal power for more
+  complicated configurations. For full details, the documentation is located
+  under the "manuals" tab on the Pentair web site's [product
+  page](https://www.pentair.com/en-us/products/residential/pool-spa-equipment/pool-pumps/supermax_vs_variablespeedpump.html).
+
+
+* The actuators are controlled by a three-wire 24VAC connection, with one
+  common neutral and two "hot" wires (one for each position). The actuators
+  have two NC limit switches which cut power to the motor once the desired
+  position has been reached.
+
+  I connected each of these to a single SPDT relay, with the position for "pool
+  mode" connected to the NC contact of the relay. This means that in the event
+  of a failure of the Pi, the actuators will return to pool mode on their own.
+
+  ![example wiring diagram](https://i.imgur.com/XerfKVD.png)
+
+
+* The heater currently uses "3-wire control". It's very similar to the pump,
+  except there are only two digital inputs, rather than four. This allows the
+  heater to be either off, on in pool mode, or on in spa mode. The temperature
+  is pre-set via the heater's control panel.
+
+  ![](https://i.imgur.com/NOjJgZz.png)
+
+  The heater is also capable of RS-485 control, which allows setting the
+  temperature, among other things, but, again, this is something I'll
+  investigate for future enhancements.
 
 
 ## Software Architecture
@@ -435,11 +487,18 @@ bill.
 ### Glossary
 
 *[SPDT]: Single Pole Double Throw
+*[NC]: Normally Closed
 
 <dl>
     <dt>Single Pole Double Throw (SPDT)</dt>
     <dd>
         An electrical switch that has one common terminal (pole) and can connect it to
         one of two different output terminals (throws).
+    </dd>
+    <dt>Normally Closed</dt>
+    <dd>
+        A switch or contact that is in a closed state when at rest, meaning
+        electricity can flow through the circuit until the switch is activated,
+        at which point the contact opens and interrupts the current flow.
     </dd>
 </dl>
